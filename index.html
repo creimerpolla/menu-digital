@@ -2,143 +2,168 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menú Digital - Pedido por WhatsApp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Menú Interactivo - La Antojería 🌮</title>
     <style>
         :root {
-            --primary: #e67e22;
-            --dark: #2c3e50;
-            --light: #ecf0f1;
+            --primary: #f39c12; 
+            --dark: #1c1c1c; 
+            --light: #ffffff;
+            --gray: #f4f4f4;
+            --accent: #25d366; /* Verde WhatsApp */
         }
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; background: #f9f9f9; }
-        header { background: var(--dark); color: white; padding: 1rem; text-align: center; position: sticky; top: 0; z-index: 100; }
         
-        .container { padding: 15px; max-width: 600px; margin: auto; }
+        * { box-sizing: border-box; }
         
-        /* Estilo de los Productos */
-        .producto { 
-            background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px;
-            display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            margin: 0; padding: 0; 
+            background: var(--gray); 
+            padding-bottom: 110px; 
         }
-        .info h3 { margin: 0; color: var(--dark); }
-        .info p { margin: 5px 0; color: #666; font-size: 0.9rem; }
-        .precio { font-weight: bold; color: var(--primary); font-size: 1.1rem; }
         
-        .btn-add { 
-            background: var(--primary); color: white; border: none; padding: 8px 15px;
-            border-radius: 8px; cursor: pointer; font-weight: bold;
+        header { 
+            background: var(--dark); 
+            color: white; 
+            padding: 2.5rem 1rem; 
+            text-align: center; 
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
-        /* Carrito flotante */
-        .carrito-bar {
-            position: fixed; bottom: 0; left: 0; right: 0; background: white;
-            padding: 20px; box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
-            display: none; flex-direction: column; gap: 10px;
+        .container { padding: 15px; max-width: 600px; margin: auto; }
+        
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
         }
+        
+        .card { 
+            background: white; border-radius: 20px; overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: flex; flex-direction: column;
+        }
+        
+        .card img {
+            width: 100%; height: 130px; object-fit: cover;
+            border-bottom: 3px solid var(--primary);
+        }
+        
+        .card-info { padding: 12px; flex-grow: 1; }
+        .card-info h3 { margin: 0; font-size: 1rem; color: var(--dark); }
+        .card-info p { margin: 5px 0; color: #777; font-size: 0.8rem; }
+        
+        .card-footer { 
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 12px; background: #fff;
+        }
+        .precio { font-weight: 700; color: var(--primary); font-size: 1.1rem; }
+        
+        .btn-add { 
+            background: var(--dark); color: white; border: none; 
+            width: 32px; height: 32px; border-radius: 8px;
+            font-weight: bold; cursor: pointer;
+        }
+
+        /* Carrito Flotante */
+        .carrito-float {
+            position: fixed; bottom: 20px; left: 15px; right: 15px; 
+            background: rgba(28, 28, 28, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 18px; border-radius: 22px; 
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            display: none; flex-direction: column; gap: 12px;
+            z-index: 1000;
+        }
+        
+        .total-row { display: flex; justify-content: space-between; color: white; font-weight: bold; }
+        
+        .input-dir { 
+            padding: 12px; border: none; border-radius: 10px; 
+            background: white; font-size: 0.9rem; width: 100%;
+        }
+        
         .btn-pedir {
-            background: #25d366; color: white; border: none; padding: 15px;
-            border-radius: 10px; font-size: 1.1rem; font-weight: bold; cursor: pointer;
+            background: var(--accent); color: white; border: none; padding: 14px;
+            border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer;
         }
-        input { padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
 <header>
     <h1>La Antojería 🌮</h1>
-    <p>Haz tu pedido y recíbelo por WhatsApp</p>
+    <p>Pedidos directos a WhatsApp</p>
 </header>
 
-<div class="container" id="menu">
-    </div>
+<div class="container">
+    <div class="menu-grid" id="menu"></div>
+</div>
 
-<div class="carrito-bar" id="carritoBar">
-    <div style="display: flex; justify-content: space-between; font-weight: bold;">
-        <span>Total:</span>
+<div class="carrito-float" id="carritoBar">
+    <div class="total-row">
+        <span>Total del pedido:</span>
         <span id="totalTxt">$0.00</span>
     </div>
-    <input type="text" id="direccion" placeholder="Dirección de entrega">
-    <button class="btn-pedir" onclick="enviarWhatsApp()">Enviar Pedido por WhatsApp 📲</button>
+    <input type="text" id="direccion" class="input-dir" placeholder="📍 Tu dirección aquí...">
+    <button class="btn-pedir" onclick="enviarWhatsApp()">PEDIR POR WHATSAPP 📲</button>
 </div>
 
 <script>
-    // 1. Datos de los productos (Aquí es donde editas para cada cliente)
     const productos = [
-        { id: 1, nombre: "Tacos al Pastor", desc: "Orden de 5 con piña y cebolla", precio: 85 },
-        { id: 2, nombre: "Torta de Asada", desc: "Con aguacate y queso fundido", precio: 65 },
-        { id: 3, nombre: "Hamburguesa Especial", desc: "Doble carne y tocino", precio: 110 },
-        { id: 4, nombre: "Agua de Horchata", desc: "Litro bien fría", precio: 35 }
+        { id: 1, nombre: "Tacos Pastor", desc: "Orden de 5 piezas", precio: 85, img: "https://images.unsplash.com/photo-1624300603538-1207400f4116?w=400" },
+        { id: 2, nombre: "Torta Asada", desc: "Con aguacate y queso", precio: 70, img: "https://images.unsplash.com/photo-1599974579688-8dbdd335c768?w=400" },
+        { id: 3, nombre: "Panuchos", desc: "3 piezas de lechón", precio: 65, img: "https://cdn.pixabay.com/photo/2021/01/29/14/40/mexican-food-5961208_640.jpg" },
+        { id: 4, nombre: "Horchata", desc: "Vaso de 1 Litro", precio: 35, img: "https://cdn.pixabay.com/photo/2016/11/19/20/00/glass-1840871_640.jpg" }
     ];
 
     let carrito = [];
 
-    // 2. Renderizar el Menú
     function cargarMenu() {
-        const menuContainer = document.getElementById('menu');
-        menuContainer.innerHTML = productos.map(p => `
-            <div class="producto">
-                <div class="info">
+        document.getElementById('menu').innerHTML = productos.map(p => `
+            <div class="card">
+                <img src="${p.img}">
+                <div class="card-info">
                     <h3>${p.nombre}</h3>
                     <p>${p.desc}</p>
-                    <span class="precio">$${p.precio}</span>
                 </div>
-                <button class="btn-add" onclick="agregarAlCarrito(${p.id})">Agregar</button>
+                <div class="card-footer">
+                    <span class="precio">$${p.precio}</span>
+                    <button class="btn-add" onclick="agregar(${p.id})">+</button>
+                </div>
             </div>
         `).join('');
     }
 
-    // 3. Lógica del Carrito
-    function agregarAlCarrito(id) {
-        const prod = productos.find(p => p.id === id);
-        carrito.push(prod);
-        actualizarCarrito();
-    }
-
-    function actualizarCarrito() {
+    function agregar(id) {
+        carrito.push(productos.find(p => p.id === id));
         const bar = document.getElementById('carritoBar');
-        const totalTxt = document.getElementById('totalTxt');
-        
-        if (carrito.length > 0) {
-            bar.style.display = 'flex';
-            const total = carrito.reduce((sum, item) => sum + item.precio, 0);
-            totalTxt.innerText = `$${total.toFixed(2)}`;
-        }
+        bar.style.display = 'flex';
+        const total = carrito.reduce((s, i) => s + i.precio, 0);
+        document.getElementById('totalTxt').innerText = `$${total.toFixed(2)}`;
     }
 
-    // 4. Integración con WhatsApp
     function enviarWhatsApp() {
-        const numeroTienda = "529991234567"; // CAMBIA ESTO POR EL NÚMERO DEL NEGOCIO (con código de país)
-        const direccion = document.getElementById('direccion').value;
+        const num = "529995769960"; // TU NÚMERO ACTUALIZADO
+        const dir = document.getElementById('direccion').value;
+        if (!dir) return alert("📍 Por favor escribe tu dirección");
 
-        if (!direccion) {
-            alert("Por favor, pon una dirección.");
-            return;
-        }
-
-        // Formatear el texto del pedido
-        let resumenPedido = "";
-        const conteo = {};
-        carrito.forEach(p => { conteo[p.nombre] = (conteo[p.nombre] || 0) + 1; });
+        let texto = "*NUEVO PEDIDO* 🌮\n\n";
+        const counts = {};
+        carrito.forEach(p => counts[p.nombre] = (counts[p.nombre] || 0) + 1);
+        for (const [n, c] of Object.entries(counts)) texto += `✅ ${c}x ${n}\n`;
         
-        for (const [nombre, cant] of Object.entries(conteo)) {
-            resumenPedido += `- ${cant}x ${nombre}\n`;
-        }
+        const total = carrito.reduce((s, i) => s + i.precio, 0);
+        texto += `\n*Total:* $${total}.00\n*Dirección:* ${dir}`;
 
-        const total = carrito.reduce((sum, item) => sum + item.precio, 0);
-
-        const mensaje = `*NUEVO PEDIDO* 🍔\n\n` +
-                        `*Detalle:*\n${resumenPedido}\n` +
-                        `*Total:* $${total}\n` +
-                        `*Entrega:* ${direccion}\n\n` +
-                        `Favor de confirmar el tiempo de entrega.`;
-
-        const url = `https://wa.me/${numeroTienda}?text=${encodeURIComponent(mensaje)}`;
-        window.open(url, '_blank');
+        window.open(`https://wa.me/${num}?text=${encodeURIComponent(texto)}`, '_blank');
     }
 
     cargarMenu();
 </script>
-
 </body>
 </html>
